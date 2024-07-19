@@ -1,1 +1,1 @@
-<p>Absensi Project has been managed by Republik Kode</p>
+<p>Absensi Project has been managed by <red>Republik Kode</red></p>
