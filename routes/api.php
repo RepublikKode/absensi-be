@@ -39,27 +39,36 @@ Route::prefix("/v1")->group(function () {
 
     Route::middleware("auth:sanctum")->group(function () {
         Route::get("/user", [UserController::class, "index"]);
+
         Route::get("/profile", [AuthController::class, "authUser"]);
+
         Route::get("/kelas", [KelasController::class, "index"]);
         Route::get("/kelas/{id}", [KelasController::class, "show"]);
         Route::post("/kelas", [KelasController::class, "store"]);
         Route::put("/kelas/{id}", [KelasController::class, "edit"]);
         Route::delete("/kelas/{id}", [KelasController::class, "destroy"]);
+
         Route::post("/absen/{kelas:id}", [AbsenController::class, "store"]);
         Route::get("/absen", [AbsenController::class, "index"]);
-        Route::post("/mapel", [MapelController::class, "store"]);
+
         Route::get("/mapel", [MapelController::class, "index"]);
         Route::get("/mapel/{id}", [MapelController::class, "show"]);
+        Route::post("/mapel", [MapelController::class, "store"]);
         Route::put("/mapel/{id}", [MapelController::class, "edit"]);
         Route::delete("/mapel/{id}", [MapelController::class, "destroy"]);
 
         Route::prefix("/admin")->group(function () {
             Route::get("/absen", [AdminAbsenController::class, "index"]);
-            Route::get("/jurusan", [JurusanController::class, "index"]);
-            Route::get("/mapel", [MapelController::class, "index"]);
-            Route::get("/roles", [AuthController::class, "indexRoles"]);
-            Route::get("/waktu", [WaktuController::class, "index"]);
             Route::get("/absens", [AdminAbsenController::class, "indexAbsen"]);
+
+            Route::get("/jurusan", [JurusanController::class, "index"]);
+            
+            Route::get("/mapel", [MapelController::class, "index"]);
+            
+            Route::get("/roles", [AuthController::class, "indexRoles"]);
+            
+            Route::get("/waktu", [WaktuController::class, "index"]);
+            
             Route::get("/user/{id}", [AdminUserController::class, "show"]);
             Route::put("/user/{id}", [AdminUserController::class, "update"]);
             Route::delete("/user/{id}", [AdminUserController::class, "destory"]);
