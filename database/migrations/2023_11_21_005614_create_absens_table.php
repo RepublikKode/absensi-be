@@ -18,6 +18,7 @@ return new class extends Migration
             $table->unsignedBigInteger("mapel_id");
             $table->unsignedBigInteger("waktu_id");
             $table->enum("metode_pembelajaran", ["pjj", "plk"]);
+            $table->string('tanggal');
             $table->timestamps();
 
             $table->foreign("user_id")->references("id")->on("users");
