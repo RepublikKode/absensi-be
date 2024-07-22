@@ -19,7 +19,6 @@ class JadwalSeeder extends Seeder
             'waktu_id' => 1,
             'metode_pembelajaran' => 'plk',
             'mapel_id' => 7,
-            'tanggal' => '2024-07-20'
         ]);
         
         Jadwal::create([
@@ -28,7 +27,6 @@ class JadwalSeeder extends Seeder
             'waktu_id' => 1,
             'metode_pembelajaran' => 'plk',
             'mapel_id' => 7,
-            'tanggal' => '2024-07-21'
         ]);
 
         Jadwal::create([
@@ -37,7 +35,6 @@ class JadwalSeeder extends Seeder
             'waktu_id' => 1,
             'metode_pembelajaran' => 'plk',
             'mapel_id' => 7,
-            'tanggal' => '2024-07-22'
         ]);
     }
 }

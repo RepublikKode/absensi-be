@@ -4,6 +4,7 @@ use App\Http\Controllers\AbsenController;
 use App\Http\Controllers\admin\AbsenController as AdminAbsenController;
 use App\Http\Controllers\admin\UserController as AdminUserController;
 use App\Http\Controllers\api\AuthController;
+use App\Http\Controllers\JadwalController;
 use App\Http\Controllers\JurusanController;
 use App\Http\Controllers\KelasController;
 use App\Http\Controllers\MapelController;
@@ -72,6 +73,9 @@ Route::prefix("/v1")->group(function () {
             Route::get("/user/{id}", [AdminUserController::class, "show"]);
             Route::put("/user/{id}", [AdminUserController::class, "update"]);
             Route::delete("/user/{id}", [AdminUserController::class, "destory"]);
+
+            Route::get('/jadwal', [JadwalController::class, 'index']);
+            Route::post('/jadwal/{id}', [JadwalController::class, 'store']);
         });
     });
 });
