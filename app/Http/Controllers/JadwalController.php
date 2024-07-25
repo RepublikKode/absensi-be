@@ -67,44 +67,68 @@ class JadwalController extends Controller
 
     public function update(Request $request, $id)
     {
-        // LANJUT BESOK
+        $validated = Validator::make($request->all(), [
+            'user_id' => 'required|numeric',
+            'waktu_id' => 'required|numeric',
+            'kelas_id' => 'required|numeric',
+            'metode_pembelajaran' => 'required',
+            'mapel_id' => 'required|numeric'
+        ]);
 
-        // $validated = Validator::make($request->all(), [
-        //     'user_id' => 'required|numeric',
-        //     'waktu_id' => 'required|numeric',
-        //     'kelas_id' => 'required|numeric',
-        //     'metode_pembelajaran' => 'required',
-        //     'mapel_id' => 'required|numeric'
-        // ]);
+        if($validated->fails()) {
+            return response()->json($validated->errors(), 400);
+        }
 
-        // if($validated->fails()) {
-        //     return response()->json($validated->errors(), 400);
-        // }
+        $checkKelas = Kelas::where('id', $request->kelas_id)->exists();
 
-        // $checkKelas = Kelas::where('id', $request->kelas)->exists();
+        if(!$checkKelas) {
+            return response()->json([
+                'message' => 'ID kelas tidak ditemukan'
+            ], 403);
+        }
 
-        // if(!$checkKelas) {
-        //     return response()->json([
-        //         'message' => 'ID kelas tidak ditemukan'
-        //     ], 403);
-        // }
+        $checkUser = User::where('id', $request->user_id)->exists();
 
-        // $checkUser = User::where('id', $request->user_id)->exists();
+        if(!$checkUser) {
+            return response()->json([
+                'message' => 'ID user tidak ditemukan'
+            ], 403);
+        }
 
-        // if(!$checkUser) {
-        //     return response()->json([
-        //         'message' => 'ID user tidak ditemukan'
-        //     ], 403);
-        // }
+        $jadwal = Jadwal::where('id', $id)->first();
 
-        // $jadwal = Jadwal::where('id', $id)->first();
+        if(!$jadwal) {
+            return response()->json([
+                'message' => 'jadwal tidak ditemukan'
+            ]. 403);
+        }
 
-        // if(!$jadwal) {
-        //     return response()->json([
-        //         'message' => 'jadwal tidak ditemukan'
-        //     ]. 403);
-        // }
+        $jadwal->user_id = $request->user_id;
+        $jadwal->waktu_id = $request->waktu_id;
+        $jadwal->kelas_id = $request->kelas_id;
+        $jadwal->metode_pembelajaran = $request->metode_pembelajaran;
+        $jadwal->mapel_id = $request->mapel_id;
+        $jadwal->save();
 
-    
+        return response()->json([
+            'message' => 'Jadwal berhasil di update'
+        ], 201);
+    }
+
+    public function destroy($id)
+    {
+        $jadwal = Jadwal::where('id', $id)->first();
+
+        if(!$jadwal) {
+            return response()->json([
+                'message' => 'jadwal tidak ditemukan'
+            ], 403);
+        }
+
+        $jadwal->delete();
+
+        return response()->json([
+            'message' => 'Jadwal berhasil dihapus'
+        ], 201);
     }
 }

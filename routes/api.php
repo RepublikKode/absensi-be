@@ -76,6 +76,8 @@ Route::prefix("/v1")->group(function () {
 
             Route::get('/jadwal', [JadwalController::class, 'index']);
             Route::post('/jadwal/{id}', [JadwalController::class, 'store']);
+            Route::put('/jadwal/{id}', [JadwalController::class, 'update']);
+            Route::delete('/jadwal/{id}', [JadwalController::class, 'destroy']);
         });
     });
 });
