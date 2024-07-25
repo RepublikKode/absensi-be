@@ -21,17 +21,44 @@ class JadwalController extends Controller
         ], 200);
     }
 
+    public function show($id)
+    {
+        $jadwal = Jadwal::with(["user","waktu","mapel","kelas"])
+                        ->where('kelas_id', $id)
+                        ->get();
+                    
+        return response()->json([
+            'message' => 'Jadwal berhasil diambil',
+            'data' => $jadwal
+        ], 200);
+    }
+
     public function store(Request $request, $id)
     {
         $validated = Validator::make($request->all(), [
             'user_id' => 'required|numeric',
             'waktu_id' => 'required|numeric',
+            'hari' => 'required',
             'metode_pembelajaran' => 'required',
             'mapel_id' => 'required|numeric'
         ]);
 
         if($validated->fails()) {
             return response()->json($validated->errors(), 400);
+        }
+
+        $checkJadwal = Jadwal::where('user_id', $request->user_id)
+                             ->where('kelas_id', $id)
+                             ->where('waktu_id', $request->waktu_id)
+                             ->where('hari', $request->hari)
+                             ->where('metode_pembelajaran', $request->metode_pembelajaran)
+                             ->where('mapel_id', $request->mapel_id)
+                             ->exists();
+
+        if($checkJadwal) {
+            return response()->json([
+                'message' => 'Jadwal ini sudah terdaftar'
+            ], 409);
         }
 
         $checkKelas = Kelas::where('id', $id)->exists();
@@ -70,6 +97,7 @@ class JadwalController extends Controller
         $validated = Validator::make($request->all(), [
             'user_id' => 'required|numeric',
             'waktu_id' => 'required|numeric',
+            'hari' => 'required',
             'kelas_id' => 'required|numeric',
             'metode_pembelajaran' => 'required',
             'mapel_id' => 'required|numeric'
@@ -105,6 +133,7 @@ class JadwalController extends Controller
 
         $jadwal->user_id = $request->user_id;
         $jadwal->waktu_id = $request->waktu_id;
+        $jadwal->hari = $request->hari;
         $jadwal->kelas_id = $request->kelas_id;
         $jadwal->metode_pembelajaran = $request->metode_pembelajaran;
         $jadwal->mapel_id = $request->mapel_id;

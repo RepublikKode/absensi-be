@@ -21,6 +21,13 @@ return new class extends Migration
                 'plk'
             ]);
             $table->unsignedBigInteger('mapel_id');
+            $table->enum('hari', [
+                'senin',
+                'selasa',
+                'rabu',
+                'kamis',
+                'jumat'
+            ]);
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users');

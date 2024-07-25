@@ -17,6 +17,7 @@ class JadwalSeeder extends Seeder
             'user_id' => 2,
             'kelas_id' => 1,
             'waktu_id' => 1,
+            'hari' => 'senin',
             'metode_pembelajaran' => 'plk',
             'mapel_id' => 7,
         ]);
@@ -25,6 +26,7 @@ class JadwalSeeder extends Seeder
             'user_id' => 2,
             'kelas_id' => 1,
             'waktu_id' => 1,
+            'hari' => 'selasa',
             'metode_pembelajaran' => 'plk',
             'mapel_id' => 7,
         ]);
@@ -33,6 +35,7 @@ class JadwalSeeder extends Seeder
             'user_id' => 2,
             'kelas_id' => 1,
             'waktu_id' => 1,
+            'hari' => 'rabu',
             'metode_pembelajaran' => 'plk',
             'mapel_id' => 7,
         ]);

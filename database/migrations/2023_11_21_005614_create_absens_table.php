@@ -18,6 +18,13 @@ return new class extends Migration
             $table->unsignedBigInteger("mapel_id");
             $table->unsignedBigInteger("waktu_id");
             $table->enum("metode_pembelajaran", ["pjj", "plk"]);
+            $table->enum('hari', [
+                'senin',
+                'selasa',
+                'rabu',
+                'kamis',
+                'jumat'
+            ]);
             $table->string('tanggal');
             $table->timestamps();
 
