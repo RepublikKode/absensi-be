@@ -26,14 +26,18 @@ return new class extends Migration
                 'selasa',
                 'rabu',
                 'kamis',
-                'jumat'
+                'jumat',
+                'sabtu',
+                'minggu'
             ]);
+            $table->unsignedBigInteger('jurusan_id');
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users');
             $table->foreign('kelas_id')->references('id')->on('kelas');
             $table->foreign('mapel_id')->references('id')->on('mapels');
             $table->foreign('waktu_id')->references('id')->on('waktus');
+            $table->foreign('jurusan_id')->references('id')->on('jurusans');
         });
     }
 

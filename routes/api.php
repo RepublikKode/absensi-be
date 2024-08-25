@@ -63,6 +63,10 @@ Route::prefix("/v1")->group(function () {
             Route::get("/absens", [AdminAbsenController::class, "indexAbsen"]);
 
             Route::get("/jurusan", [JurusanController::class, "index"]);
+            Route::get("/jurusan/{id}", [JurusanController::class, "show"]);
+            Route::post("/jurusan", [JurusanController::class, "store"]);
+            Route::put("/jurusan/{id}", [JurusanController::class, "update"]);
+            Route::delete("/jurusan/{id}", [JurusanController::class, "destroy"]);
             
             Route::get("/mapel", [MapelController::class, "index"]);
             
@@ -75,8 +79,10 @@ Route::prefix("/v1")->group(function () {
             Route::delete("/user/{id}", [AdminUserController::class, "destory"]);
 
             Route::get('/jadwal', [JadwalController::class, 'index']);
-            Route::get('/show/{id}', [JadwalController::class , 'show']);
-            Route::post('/jadwal/{id}', [JadwalController::class, 'store']);
+            Route::get('/jadwal/{id}', [JadwalController::class, 'show']);
+            Route::get('/jadwal/kelas/{id}', [JadwalController::class , 'jadwalKelas']);
+            Route::get('/jadwal/detail/{idKelas}/{idWaktu}/{hari}   ', [JadwalController::class, 'jadwalDetail']);
+            Route::post('/jadwal', [JadwalController::class, 'store']);
             Route::put('/jadwal/{id}', [JadwalController::class, 'update']);
             Route::delete('/jadwal/{id}', [JadwalController::class, 'destroy']);
         });

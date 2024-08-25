@@ -14,11 +14,15 @@ class KelasSeeder extends Seeder
     public function run(): void
     {
         Kelas::create([
-            "kelas" => "X TKJ A"
+            "kelas" => "X",
+            "jurusan_id" => 1,
+            "alphabet" => 'A'
         ]);
 
         Kelas::create([
-            "kelas" => "X TKJ B"
+            "kelas" => "X",
+            "jurusan_id" => 1,
+            "alphabet" => 'B'
         ]);
     }
 }

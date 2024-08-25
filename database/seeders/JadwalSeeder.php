@@ -20,6 +20,7 @@ class JadwalSeeder extends Seeder
             'hari' => 'senin',
             'metode_pembelajaran' => 'plk',
             'mapel_id' => 7,
+            'jurusan_id' => 1,
         ]);
         
         Jadwal::create([
@@ -29,6 +30,7 @@ class JadwalSeeder extends Seeder
             'hari' => 'selasa',
             'metode_pembelajaran' => 'plk',
             'mapel_id' => 7,
+            'jurusan_id' => 1,
         ]);
 
         Jadwal::create([
@@ -38,6 +40,7 @@ class JadwalSeeder extends Seeder
             'hari' => 'rabu',
             'metode_pembelajaran' => 'plk',
             'mapel_id' => 7,
+            'jurusan_id' => 2,
         ]);
     }
 }

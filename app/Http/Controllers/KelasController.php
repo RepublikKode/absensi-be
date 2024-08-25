@@ -10,7 +10,8 @@ use Illuminate\Support\Facades\Validator;
 class KelasController extends Controller
 {
     function index() {
-        $kelas = Kelas::all();
+        $kelas = Kelas::with(['jurusan'])
+                      ->get();
 
         if ($kelas) {
             return response()->json([
@@ -41,7 +42,10 @@ class KelasController extends Controller
     }
 
     function show($id) {
-        $kelas = Kelas::firstWhere("id", $id)->load("absen");
+        $kelas = Kelas::where('kelas.id', $id)
+                      ->join('jurusans', 'jurusan_id', '=', 'jurusans.id')
+                      ->first()
+                      ->load("absen");
 
         if ($kelas) {
             return response()->json([
@@ -57,7 +61,11 @@ class KelasController extends Controller
 
     function edit(Request $request, $id) {
         $kelas = Kelas::firstWhere("id", $id);
-        $kelas->update(["kelas" => $request->kelas]);
+        $kelas->update([
+            "kelas" => $request->kelas,
+            "jurusan_id" => $request->jurusan_id,
+            "alphabet" => $request->alphabet
+        ]);
         $kelas->save();
 
         return response()->json([

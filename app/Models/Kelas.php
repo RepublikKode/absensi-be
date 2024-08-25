@@ -16,4 +16,8 @@ class Kelas extends Model
     function absen() : HasMany {
         return $this->hasMany(Absen::class, "kelas_id");
     }
+
+    function jurusan(): BelongsTo {
+        return $this->belongsTo(Jurusan::class, 'jurusan_id');
+    }
 }

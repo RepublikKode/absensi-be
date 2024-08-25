@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Absen;
 use App\Models\Jadwal;
+use App\Models\Jurusan;
 use App\Models\Kelas;
 use App\Models\User;
 use Carbon\Carbon;
@@ -47,17 +48,60 @@ class AbsenController extends Controller
 
         $user = Auth::user();
 
-        $jadwal = Jadwal::where('user_id', $user->id)
-        ->where('kelas_id', $kelas->id)
-        ->where('metode_pembelajaran', $request->metode_pembelajaran)
+        // $jadwal = Jadwal::where('user_id', $user->id)
+        //                 ->where('kelas_id', $kelas->id)
+        //                 ->where('metode_pembelajaran', $request->metode_pembelajaran)
+        //                 ->where('mapel_id', $request->mapel_id)
+        //                 ->where('waktu_id', $request->waktu_id)
+        //                 ->exists();
+
+        // if(!$jadwal) {
+        //     return response()->json([
+        //         'message' => 'Maaf, anda tidak terdaftar di jadwal ini'
+        //     ], 401);
+        // }
+
+        // $absenCheckJurusan = Absen::where('user_id', $user->id)
+        // ->where('kelas_id', $kelas->id)
+        // ->where('hari', $hari)
+        // ->where('mapel_id', $request->mapel_id)
+        // ->where('waktu_id', $request->waktu_id)
+        // ->where('tanggal', date('Y-m-d'))
+        // ->first();
+
+        // $checkJurusan = Kelas::where('id', $absenCheckJurusan->kelas_id)->exists();
+
+        // if($checkJurusan) {
+        //     $getJurusan = Kelas::where('id', $absenCheckJurusan->kelas_id)->first();
+        // }
+
+        // $jadwalCheckJurusan = Jadwal::where('user_id', $user->id)
+        //                             ->where('kelas_id', $kelas->id)
+        //                             ->where('metode_pembelajaran', $request->metode_pembelajaran)
+        //                             ->where('mapel_id', $request->mapel_id)
+        //                             ->where('waktu_id', $request->waktu_id)
+        //                             ->where('jurusan_id', '!=', $getJurusan->id)->exists();
+
+        // if($jadwalCheckJurusan) {
+        //     return response()->json([
+        //         'message' => 'Maaf, anda tidak berada dijurusan ini'
+        //     ], 400);
+        // }
+
+
+        $getKelas = Kelas::where('id', $kelas->id)->first();
+
+        $checkJurusan = Absen::where('user_id', $user->id)
+        ->where('hari', $hari)
         ->where('mapel_id', $request->mapel_id)
         ->where('waktu_id', $request->waktu_id)
-        ->exists();
+        ->where('tanggal', date('Y-m-d'))
+        ->first();
 
-        if(!$jadwal) {
+        if($checkJurusan->jurusan_id !== $getKelas->jurusan_id) {
             return response()->json([
-                'message' => 'Maaf, anda tidak terdaftar di jadwal ini'
-            ], 401);
+                'message' => 'Anda tidak berada di jurusan ini'
+            ], 400);
         }
 
         $absen = Absen::where('user_id', $user->id)
@@ -81,8 +125,10 @@ class AbsenController extends Controller
             "hari" => $hari,
             "mapel_id" => $request->mapel_id,
             "waktu_id" => $request->waktu_id,
+            "jurusan_id" => $getKelas->jurusan_id,
             'tanggal' => date('Y-m-d')
         ];
+
         
         $absen = Absen::create($data);
 

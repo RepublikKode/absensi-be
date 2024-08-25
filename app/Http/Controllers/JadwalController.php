@@ -24,6 +24,18 @@ class JadwalController extends Controller
     public function show($id)
     {
         $jadwal = Jadwal::with(["user","waktu","mapel","kelas"])
+                        ->where('id', $id)
+                        ->first();
+
+        return response()->json([
+            'message' => 'Jadwal berhasil diambil',
+            'data' => $jadwal
+        ], 200);
+    }
+
+    public function jadwalKelas($id)
+    {
+        $jadwal = Jadwal::with(["user","waktu","mapel","kelas"])
                         ->where('kelas_id', $id)
                         ->get();
                     
@@ -33,10 +45,25 @@ class JadwalController extends Controller
         ], 200);
     }
 
-    public function store(Request $request, $id)
+    public function jadwalDetail($idKelas, $idWaktu, $hari)
+    {
+        $jadwal = Jadwal::with(["user","waktu","mapel","kelas"])
+                        ->where('kelas_id', $idKelas)
+                        ->where('waktu_id', $idWaktu)
+                        ->where('hari', $hari)
+                        ->first();
+
+        return response()->json([
+            'message' => 'Jadwal berhasil diambil',
+            'data' => $jadwal
+        ], 200);              
+    }
+
+    public function store(Request $request)
     {
         $validated = Validator::make($request->all(), [
             'user_id' => 'required|numeric',
+            'kelas_id' => 'required|numeric',
             'waktu_id' => 'required|numeric',
             'hari' => 'required',
             'metode_pembelajaran' => 'required',
@@ -47,12 +74,9 @@ class JadwalController extends Controller
             return response()->json($validated->errors(), 400);
         }
 
-        $checkJadwal = Jadwal::where('user_id', $request->user_id)
-                             ->where('kelas_id', $id)
+        $checkJadwal = Jadwal::where('kelas_id', $request->kelas_id)
                              ->where('waktu_id', $request->waktu_id)
                              ->where('hari', $request->hari)
-                             ->where('metode_pembelajaran', $request->metode_pembelajaran)
-                             ->where('mapel_id', $request->mapel_id)
                              ->exists();
 
         if($checkJadwal) {
@@ -61,7 +85,7 @@ class JadwalController extends Controller
             ], 409);
         }
 
-        $checkKelas = Kelas::where('id', $id)->exists();
+        $checkKelas = Kelas::where('id', $request->kelas_id)->exists();
 
         if(!$checkKelas) {
             return response()->json([
@@ -79,8 +103,9 @@ class JadwalController extends Controller
 
         $data = [
             'user_id' => $request->user_id,
-            'kelas_id' => $id,
+            'kelas_id' => $request->kelas_id,
             'waktu_id' => $request->waktu_id,
+            'hari' => $request->hari,
             'metode_pembelajaran' => $request->metode_pembelajaran,
             'mapel_id' => $request->mapel_id,
         ];
@@ -105,6 +130,20 @@ class JadwalController extends Controller
 
         if($validated->fails()) {
             return response()->json($validated->errors(), 400);
+        }
+
+        $checkJadwal = Jadwal::where('user_id', $request->user_id)
+                             ->where('kelas_id', $request->kelas_id)
+                             ->where('waktu_id', $request->waktu_id)
+                             ->where('hari', $request->hari)
+                             ->where('metode_pembelajaran', $request->metode_pembelajaran)
+                             ->where('mapel_id', $request->mapel_id)
+                             ->exists();
+
+        if($checkJadwal) {
+            return response()->json([
+                'message' => 'Jadwal ini sudah terdaftar'
+            ], 409);
         }
 
         $checkKelas = Kelas::where('id', $request->kelas_id)->exists();

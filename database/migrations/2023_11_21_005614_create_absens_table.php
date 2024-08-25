@@ -23,8 +23,11 @@ return new class extends Migration
                 'selasa',
                 'rabu',
                 'kamis',
-                'jumat'
+                'jumat',
+                'sabtu',
+                'minggu'
             ]);
+            $table->integer('jurusan_id');
             $table->string('tanggal');
             $table->timestamps();
 
