@@ -21,6 +21,7 @@ return new class extends Migration
             ]);
             $table->integer('jurusan_id');
             $table->enum('alphabet', range('A', 'Z')); // mengambil A-Z 
+            $table->string('fix_kelas');
             $table->integer("list")->default(0);
             $table->timestamps();
         });

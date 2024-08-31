@@ -13,7 +13,7 @@ class WaktuSeeder extends Seeder
      */
     public function run(): void
     {
-        for($i = 1; $i <= 8; $i++) {
+        for($i = 1; $i <= 11; $i++) {
            Waktu::create([
                 "jamke" => "Jam ke $i"
             ]);

@@ -79,9 +79,10 @@ Route::prefix("/v1")->group(function () {
             Route::delete("/user/{id}", [AdminUserController::class, "destory"]);
 
             Route::get('/jadwal', [JadwalController::class, 'index']);
+            Route::get('/getAllJadwal', [JadwalController::class, 'getAllJadwal']);
             Route::get('/jadwal/{id}', [JadwalController::class, 'show']);
             Route::get('/jadwal/kelas/{id}', [JadwalController::class , 'jadwalKelas']);
-            Route::get('/jadwal/detail/{idKelas}/{idWaktu}/{hari}   ', [JadwalController::class, 'jadwalDetail']);
+            Route::get('/jadwal/detail/{id}', [JadwalController::class, 'jadwalDetail']);
             Route::post('/jadwal', [JadwalController::class, 'store']);
             Route::put('/jadwal/{id}', [JadwalController::class, 'update']);
             Route::delete('/jadwal/{id}', [JadwalController::class, 'destroy']);

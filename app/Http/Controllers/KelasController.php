@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\KelasRequest;
+use App\Models\Jurusan;
 use App\Models\Kelas;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -25,8 +26,25 @@ class KelasController extends Controller
         }
     }
 
-    function store(KelasRequest $request) {
-        $data = $request->validated();
+    function store(Request $request) {
+        $validated = Validator::make($request->all(), [
+            'kelas' => 'required',
+            'jurusan_id' => 'required',
+            'alphabet' => 'required',
+        ]);
+
+        if($validated->fails()) {
+            return response()->json($validated->errors(), 400);
+        }
+
+        $jurusan = Jurusan::where('id', $request->jurusan_id)->first();
+
+        $data = [
+            'kelas' => $request->kelas,
+            'jurusan_id' => $request->jurusan_id,
+            'alphabet' => $request->alphabet,
+            'fix_kelas' => $request->kelas . ' ' . $jurusan->jurusan . ' ' . $request->alphabet
+        ];
 
         $kelas = Kelas::create($data);
 
@@ -61,10 +79,13 @@ class KelasController extends Controller
 
     function edit(Request $request, $id) {
         $kelas = Kelas::firstWhere("id", $id);
+        $jurusan = Jurusan::where('id', $request->jurusan_id)->first();
+
         $kelas->update([
             "kelas" => $request->kelas,
             "jurusan_id" => $request->jurusan_id,
-            "alphabet" => $request->alphabet
+            "alphabet" => $request->alphabet,
+            "fix_kelas" => $request->kelas . ' ' . $jurusan->jurusan . ' ' . $request->alphabet
         ]);
         $kelas->save();
 

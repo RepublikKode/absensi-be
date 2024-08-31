@@ -30,4 +30,8 @@ class Jadwal extends Model
     function kelas() : BelongsTo {
         return $this->belongsTo(Kelas::class, "kelas_id");
     }
+
+    function jurusan() : BelongsTo {
+        return $this->belongsTo(Jurusan::class, "jurusan_id");
+    }
 }

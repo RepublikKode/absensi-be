@@ -98,10 +98,12 @@ class AbsenController extends Controller
         ->where('tanggal', date('Y-m-d'))
         ->first();
 
-        if($checkJurusan->jurusan_id !== $getKelas->jurusan_id) {
-            return response()->json([
-                'message' => 'Anda tidak berada di jurusan ini'
-            ], 400);
+        if($checkJurusan) {
+            if($checkJurusan->jurusan_id !== $getKelas->jurusan_id) {
+                return response()->json([
+                    'message' => 'Anda tidak berada di jurusan ini'
+                ], 400);
+            }
         }
 
         $absen = Absen::where('user_id', $user->id)

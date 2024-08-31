@@ -16,13 +16,15 @@ class KelasSeeder extends Seeder
         Kelas::create([
             "kelas" => "X",
             "jurusan_id" => 1,
-            "alphabet" => 'A'
+            "alphabet" => 'A',
+            "fix_kelas" => "X PPLG A"
         ]);
 
         Kelas::create([
             "kelas" => "X",
             "jurusan_id" => 1,
-            "alphabet" => 'B'
+            "alphabet" => 'B',
+            "fix_kelas" => "X PPLG B"
         ]);
     }
 }
