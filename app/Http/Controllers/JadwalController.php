@@ -21,20 +21,23 @@ class JadwalController extends Controller
         ], 200);
     }
 
-    public function getAllJadwal() 
+    public function getAllJadwal()
     {
         // Mengambil data jadwal beserta relasinya
         $jadwal = Jadwal::with(["user", "waktu", "mapel", "kelas", "jurusan"])->get();
 
-        // Mengelompokkan data berdasarkan kelas
-        $groupedByKelas = $jadwal->groupBy('kelas.fix_kelas')->map(function ($items) {
+        // Mengelompokkan data berdasarkan minggu, kemudian hari, dan akhirnya kelas
+        $groupedByMinggu = $jadwal->groupBy('minggu')->map(function ($items) {
             // Mengelompokkan lebih lanjut berdasarkan hari
-            return $items->groupBy('hari');
+            return $items->groupBy('hari')->map(function ($dayItems) {
+                // Mengelompokkan lebih lanjut berdasarkan kelas
+                return $dayItems->groupBy('kelas.fix_kelas');
+            });
         });
 
         return response()->json([
             'message' => 'Jadwal berhasil diambil',
-            'data' => $groupedByKelas
+            'data' => $groupedByMinggu
         ], 200);
     }
 
@@ -66,9 +69,15 @@ class JadwalController extends Controller
     {
         $jadwal = Jadwal::with(["user", "waktu", "mapel", "kelas", "jurusan"])
             ->where('kelas_id', $id)
+            ->orderBy('minggu')
             ->orderBy('hari')
             ->get()
-            ->groupBy('hari');
+            ->groupBy(function ($item) {
+                return $item->hari;
+            })
+            ->map(function ($group) {
+                return $group->groupBy('minggu');
+            });
 
         return response()->json([
             'message' => 'Jadwal berhasil diambil',
@@ -81,10 +90,13 @@ class JadwalController extends Controller
         $validated = Validator::make($request->all(), [
             'user_id' => 'required|numeric',
             'kelas_id' => 'required|numeric',
+            'ruang' => 'required',
+            'minggu' => 'required',
             'hari' => 'required',
             'metode_pembelajaran' => 'required',
             'mapel_id' => 'required|numeric',
-            'jurusan_id' => 'required'
+            'jurusan_id' => 'required',
+            'total_jam' => 'required|numeric|min:1' // total_jam harus angka minimal 1
         ]);
 
         if ($validated->fails()) {
@@ -118,32 +130,65 @@ class JadwalController extends Controller
             ], 403);
         }
 
-        
+        // Ambil waktu terakhir untuk menentukan waktuID
         $getWaktu = Jadwal::where('kelas_id', $request->kelas_id)
-                          ->where('hari', $request->hari)
-                          ->latest()
-                          ->first();
+            ->where('hari', $request->hari)
+            ->where('minggu', $request->minggu)
+            ->orderBy('waktu_id', 'desc')
+            ->first();
 
-        if($getWaktu) {
+        if ($getWaktu) {
             $waktuID = $getWaktu->waktu_id + 1;
         } else {
             $waktuID = 1;
         }
 
-        $data = [
-            'user_id' => $request->user_id,
-            'kelas_id' => $request->kelas_id,
-            'waktu_id' => $waktuID,
-            'hari' => $request->hari,
-            'metode_pembelajaran' => $request->metode_pembelajaran,
-            'mapel_id' => $request->mapel_id,
-            'jurusan_id' => $request->jurusan_id,
-        ];
+        // Loop untuk membuat jadwal sesuai total_jam
+        // Loop untuk membuat jadwal sesuai total_jam
+        for ($i = 0; $i < $request->total_jam; $i++) {
+            $currentWaktuID = $waktuID + $i; // waktu_id yang akan dicek
 
-        $jadwal = Jadwal::create($data);
+            // Cek apakah guru sudah terdaftar pada waktu yang sama di hari yang sama
+            $checkUser = Jadwal::where('user_id', $request->user_id)
+                ->where('hari', $request->hari)
+                ->where('minggu', $request->minggu)
+                ->where('waktu_id', $currentWaktuID) // cek berdasarkan waktu_id yang akan digunakan
+                ->first();
+
+            if ($checkUser) {
+                // Jika ruang yang sudah ada sama dengan ruang dalam request, lanjutkan
+                if ($checkUser->ruang === $request->ruang) {
+                    // Berarti ruang yang sama, tidak ada konflik, lanjutkan ke pembuatan jadwal
+                    continue;
+                } else {
+                    // Jika ruang berbeda, kembalikan respons error
+                    return response()->json([
+                        'status' => 'error',
+                        'message' => 'Guru sudah terdaftar di kelas lain pada jam ' . $currentWaktuID . ' di ruang berbeda'
+                    ], 400);
+                }
+            }
+
+            // Data jadwal yang akan dibuat
+            $data = [
+                'user_id' => $request->user_id,
+                'kelas_id' => $request->kelas_id,
+                'ruang' => $request->ruang,
+                'minggu' => $request->minggu,
+                'waktu_id' => $currentWaktuID, // waktu_id bertambah setiap iterasi
+                'hari' => $request->hari,
+                'metode_pembelajaran' => $request->metode_pembelajaran,
+                'mapel_id' => $request->mapel_id,
+                'jurusan_id' => $request->jurusan_id,
+            ];
+
+            // Simpan data jadwal
+            Jadwal::create($data);
+        }
 
         return response()->json([
-            'message' => 'jadwal berhasil dibuat'
+            'status' => 'success',
+            'message' => 'Jadwal berhasil dibuat'
         ], 201);
     }
 
@@ -152,6 +197,8 @@ class JadwalController extends Controller
         $validated = Validator::make($request->all(), [
             'user_id' => 'required|numeric',
             'waktu_id' => 'required|numeric',
+            'ruang' => 'required',
+            'minggu' => 'required',
             'hari' => 'required',
             'kelas_id' => 'required|numeric',
             'metode_pembelajaran' => 'required',
@@ -203,6 +250,8 @@ class JadwalController extends Controller
 
         $jadwal->user_id = $request->user_id;
         $jadwal->waktu_id = $request->waktu_id;
+        $jadwal->ruang = $request->ruang;
+        $jadwal->minggu = $request->minggu;
         $jadwal->hari = $request->hari;
         $jadwal->kelas_id = $request->kelas_id;
         $jadwal->metode_pembelajaran = $request->metode_pembelajaran;

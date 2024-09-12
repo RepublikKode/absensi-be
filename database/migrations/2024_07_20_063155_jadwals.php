@@ -15,7 +15,11 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('user_id'); 
             $table->unsignedBigInteger('kelas_id');
+            $table->string('ruang');
             $table->unsignedBigInteger("waktu_id");
+            $table->enum('minggu', [
+                1, 2
+            ]);
             $table->enum('metode_pembelajaran', [
                 'pjj',
                 'plk'
@@ -31,6 +35,7 @@ return new class extends Migration
                 'minggu'
             ]);
             $table->unsignedBigInteger('jurusan_id');
+            // $table->integer('total_jam');
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users');
